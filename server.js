@@ -36,9 +36,18 @@ app.all("/api/*", async (req, res) => {
       fetchOptions.body = JSON.stringify(req.body);
     }
 
-    const response = await fetch(vauntUrl, fetchOptions);
-    const data = await response.json();
-    res.status(response.status).json(data);
+  const response = await fetch(vauntUrl, fetchOptions);
+
+const text = await response.text();
+
+console.log("━━━━━━━━━━━━━━━━━━━━");
+console.log("VAUNT URL:", vauntUrl);
+console.log("STATUS:", response.status);
+console.log("AUTH:", authHeader ? "Bearer prezent" : "Lipsă");
+console.log("RESPONSE:", text);
+console.log("━━━━━━━━━━━━━━━━━━━━");
+
+res.status(response.status).send(text);
   } catch (err) {
     console.error(`[Proxy Error] ${req.method} ${vauntUrl}:`, err.message);
     res.status(500).json({ error: "Eroare proxy", details: err.message });
