@@ -87,5 +87,4 @@ app.all("/api/*", function(req, res) {
 app.listen(PORT, function() {
   console.log("VAUNT Proxy pornit pe portul " + PORT);
 });
-app.listen(PORT, () => console.log(`VAUNT Proxy pornit pe portul ${PORT}`));
 
