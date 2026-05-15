@@ -28,7 +28,7 @@ app.post("/chat", async (req, res) => {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-3-5-sonnet-20241022",
         max_tokens: max_tokens || 1000,
         system: system || "",
         messages,
@@ -50,6 +50,36 @@ app.all("/api/*", async (req, res) => {
   const vauntUrl = `${VAUNT_BASE}${vauntPath}${queryString ? "?" + queryString : ""}`;
 
   const authHeader = req.headers["authorization"];
+  if (!authHeader) return res.status(401).json({ error: "Authorization header lipsa" });
+  if (!agency_uuid) return res.status(400).json({ error: "agency_uuid lipsa" });
+
+  try {
+    const fetchOptions = {
+      method: req.method,
+      headers: {
+        "Authorization": authHeader,
+        "agency-uuid": agency_uuid,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Accept-Language": "ro",
+      },
+    };
+    if (["POST", "PUT", "PATCH"].includes(req.method) && req.body) {
+      fetchOptions.body = JSON.stringify(req.body);
+    }
+    console.log(`[VAUNT] ${req.method} ${vauntUrl}`);
+    const response = await fetch(vauntUrl, fetchOptions);
+    const data = await response.json();
+    console.log(`[VAUNT] -> ${response.status}`);
+    res.status(response.status).json(data);
+  } catch (err) {
+    console.error(`[VAUNT Error]:`, err.message);
+    res.status(500).json({ error: "Eroare proxy", details: err.message });
+  }
+});
+
+app.listen(PORT, () => console.log(`VAUNT Proxy pornit pe portul ${PORT}`));
+
   if (!authHeader) return res.status(401).json({ error: "Authorization header lipsa" });
   if (!agency_uuid) return res.status(400).json({ error: "agency_uuid lipsa" });
 
