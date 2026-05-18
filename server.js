@@ -29,7 +29,7 @@ app.post("/chat", function(req, res) {
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-3-5-sonnet-20241022",
+      model: "claude-3-5-sonnet-latest",
       max_tokens: max_tokens || 1000,
       system: system || "",
       messages: messages,
